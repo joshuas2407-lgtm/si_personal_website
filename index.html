@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Joshua Si</title>
+  <meta name="description" content="Personal website of Joshua Si — projects, experience, skills and resume." />
+  <meta name="theme-color" content="#0a0f2e" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Animated geometric backdrop -->
+  <canvas id="backdrop" aria-hidden="true"></canvas>
+
+  <!-- Taskbar -->
+  <header class="taskbar">
+    <a class="brand" href="#/home" aria-label="Home"><span class="brand-mark">◆</span><span id="brand-name"></span></a>
+    <nav class="nav" id="nav" aria-label="Pages"></nav>
+  </header>
+
+  <!-- Page content is rendered here by js/app.js -->
+  <main id="stage" class="stage" aria-live="polite"></main>
+
+  <!-- Bottom page indicator + arrows -->
+  <footer class="pager">
+    <button class="pager-btn" id="prev" aria-label="Previous page">‹</button>
+    <div class="dots" id="dots"></div>
+    <button class="pager-btn" id="next" aria-label="Next page">›</button>
+  </footer>
+
+  <script src="data/content.js"></script>
+  <script src="js/background.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
