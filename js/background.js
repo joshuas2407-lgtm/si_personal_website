@@ -10,19 +10,33 @@
 
   const CONFIG = {
     cellSize: 58,            // triangle side length in px
-    faintAlpha: 0.06,        // alpha of the always-visible background grid
-    strongAlpha: 0.85,       // max alpha of the highlighted band
+    faintAlpha: 0.08,        // alpha of the always-visible background grid
+    strongAlpha: 0.9,        // max alpha of the highlighted band
     lineWidth: 1.15,
     colors: [                // left → right gradient of the lines
       [0.0, "#ff2fd0"],      // magenta
-      [0.3, "#c03cff"],
-      [0.5, "#9b4dff"],      // purple
-      [0.72, "#5b7bff"],
-      [0.88, "#14d39a"],     // emerald
-      [1.0, "#ffd23f"],      // yellow
+      [0.25, "#ef3ae6"],
+      [0.5, "#b84dff"],
+      [0.72, "#9b4dff"],     // purple
+      [0.88, "#7f5cff"],
+      [0.96, "#14d39a"],     // emerald accent
+      [1.0, "#ffd23f"],      // yellow accent
     ],
-    bgInner: "#18205a",
-    bgOuter: "#0a0f2e",
+    bgInner: "#2c1260",      // deep purple centre
+    bgOuter: "#120a30",      // dark purple-blue edges
+    glows: [                 // soft colour washes: x, y (0–1 of screen), radius (× screen), colour
+      [0.18, 0.3, 0.6, "rgba(255, 47, 208, 0.18)"],   // magenta
+      [0.82, 0.72, 0.65, "rgba(155, 77, 255, 0.2)"],  // purple
+    ],
+    // Silk ribbons down the right side of the screen.
+    // x = centre line (fraction of screen width), amp = how far it sways,
+    // width = ribbon width, twist = how often it twists, speed = idle drift,
+    // colors = top → bottom, strands = number of fine lines, alpha = brightness.
+    ribbons: [
+      { x: 0.8,  amp: 0.07, freq: 1.5, width: 0.075, twist: 2.2, speed: 0.22,  colors: ["#b84dff", "#ff2fd0"], strands: 18, alpha: 0.32 },
+      { x: 0.87, amp: 0.05, freq: 2.0, width: 0.05,  twist: 1.6, speed: -0.17, colors: ["#7f5cff", "#c03cff"], strands: 14, alpha: 0.28 },
+      { x: 0.74, amp: 0.09, freq: 1.1, width: 0.04,  twist: 2.8, speed: 0.15,  colors: ["#ff2fd0", "#9b4dff"], strands: 12, alpha: 0.24 },
+    ],
   };
 
   const canvas = document.getElementById("backdrop");
@@ -39,6 +53,8 @@
     offX: 0, offY: 0, tOffX: 0, tOffY: 0,
     grad: 0, tGrad: 0,          // gradient angle tilt
     waveX: -1e4, waveDir: 1, waveStart: -1,
+    rPhase: 0, tRPhase: 0,      // ribbon shape
+    rShift: 0, tRShift: 0,      // ribbon sideways drift
     seed: makeSeed(),
   };
 
@@ -173,6 +189,15 @@
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
+    for (const [gx, gy, gr, col] of CONFIG.glows) {
+      const x = gx * W, y = gy * H, r = gr * Math.max(W, H);
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, col);
+      g.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+
     for (const p of paths) p.length = 0;
 
     for (const e of edges) {
@@ -205,6 +230,65 @@
       ctx.stroke();
     }
     ctx.restore();
+
+    drawRibbons(reduceMotion ? 0 : t, ease);
+  }
+
+  /* ---------- silk ribbons ---------- */
+  function drawRibbons(t, ease) {
+    state.rPhase += (state.tRPhase - state.rPhase) * ease;
+    state.rShift += (state.tRShift - state.rShift) * ease;
+
+    const S = Math.min(Math.max(W, 480), 1600); // keeps proportions sane on tiny/huge screens
+    const step = 14;
+    const dim = W < 720 ? 0.55 : 1; // softer on phones, where ribbons sit behind text
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.lineWidth = 1;
+
+    CONFIG.ribbons.forEach((r, j) => {
+      const ph = state.rPhase * (j % 2 ? -1 : 1) + j * 1.9;
+      const tt = t * r.speed;
+      const baseX = r.x * W + state.rShift * (1 + j * 0.4);
+      const amp = r.amp * S, width = r.width * S;
+
+      // Centre line and half-width at each height
+      const ys = [], cs = [], hs = [];
+      for (let y = -40; y <= H + 40; y += step) {
+        const v = y / H;
+        ys.push(y);
+        cs.push(baseX + amp * Math.sin(v * Math.PI * r.freq + ph + tt) + amp * 0.35 * Math.sin(v * Math.PI * r.freq * 2.3 - tt * 1.4));
+        hs.push(width * Math.cos(v * Math.PI * r.twist + ph * 0.8 + tt * 1.3));
+      }
+
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, r.colors[0]);
+      grad.addColorStop(1, r.colors[1]);
+      ctx.strokeStyle = grad;
+      ctx.fillStyle = grad;
+
+      // Translucent body of the ribbon
+      ctx.globalAlpha = r.alpha * 0.22 * dim;
+      ctx.beginPath();
+      for (let k = 0; k < ys.length; k++) ctx.lineTo(cs[k] - hs[k], ys[k]);
+      for (let k = ys.length - 1; k >= 0; k--) ctx.lineTo(cs[k] + hs[k], ys[k]);
+      ctx.closePath();
+      ctx.fill();
+
+      // Fine strands, brighter towards the edges like folded silk
+      for (let i = 0; i < r.strands; i++) {
+        const u = i / (r.strands - 1) - 0.5;
+        ctx.globalAlpha = r.alpha * (0.35 + 1.3 * Math.abs(u)) * dim;
+        ctx.beginPath();
+        for (let k = 0; k < ys.length; k++) {
+          const x = cs[k] + 2 * u * hs[k] + Math.sin(ys[k] / 90 + i * 0.7 + tt * 2) * 2;
+          if (k === 0) ctx.moveTo(x, ys[k]);
+          else ctx.lineTo(x, ys[k]);
+        }
+        ctx.stroke();
+      }
+    });
+    ctx.restore();
   }
 
   function loop(time) {
@@ -220,6 +304,9 @@
       state.tOffX = (Math.random() - 0.5) * s;
       state.tOffY = (Math.random() - 0.5) * s * 0.6;
       state.tGrad = (Math.random() - 0.5) * 0.5;
+      // Ribbons roll forward/back with the page direction and drift sideways
+      state.tRPhase += (dir < 0 ? -1 : 1) * (1.2 + Math.random() * 1.2);
+      state.tRShift = (Math.random() - 0.5) * Math.min(W, 1400) * 0.06;
       state.waveDir = dir < 0 ? -1 : 1;
       state.waveStart = dir ? performance.now() : -1;
       retarget(false);

@@ -49,7 +49,7 @@
       ${header("01 — About", "About Me")}
       <div class="panel about">
         <div class="about-top">
-          ${photo}
+          <div class="about-photo-frame">${photo}</div>
           <ul class="facts">
             ${list(a.facts, (f) => `<li><span class="label">${esc(f.label)}</span><span>${esc(f.value)}</span></li>`)}
           </ul>
@@ -60,26 +60,65 @@
       </div>`;
   }
 
+  const bullets = (pts) => (pts && pts.length ? `<ul>${list(pts, (p) => `<li>${esc(p)}</li>`)}</ul>` : "");
+  const meta = (...parts) => parts.filter(Boolean).map(esc).join(" · ");
+
   function renderExperience() {
     const items = S.experience || [];
     return `
-      ${header("02 — Experience", "Experience", "Where I've worked and what I did there.")}
+      ${header("02 — Experience", "Experience", "Where I've worked and volunteered.")}
       ${items.length ? `<div class="timeline">
         ${list(items, (e) => `
           <article class="timeline-item panel">
-            <div class="meta">${esc(e.dates)}${e.location ? ` · ${esc(e.location)}` : ""}</div>
+            <div class="meta">${meta(e.dates, e.location)}</div>
             <h3>${esc(e.role)} <span class="org">@ ${esc(e.org)}</span></h3>
-            ${e.points && e.points.length ? `<ul>${list(e.points, (p) => `<li>${esc(p)}</li>`)}</ul>` : ""}
+            ${e.note ? `<div class="note">${esc(e.note)}</div>` : ""}
+            ${bullets(e.points)}
           </article>`)}
       </div>` : empty("No experience added yet.")}`;
   }
 
+  // Turns any YouTube link (youtu.be, watch?v=, shorts, embed) into its video id.
+  function youtubeId(url) {
+    const m = String(url || "").match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/))([\w-]{11})/);
+    return m ? m[1] : "";
+  }
+
+  function videoEmbed(p) {
+    const id = youtubeId(p.video);
+    if (!id) return "";
+    return `
+      <div class="video">
+        <iframe src="https://www.youtube-nocookie.com/embed/${id}" title="${esc(p.title)} video"
+          loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>`;
+  }
+
   function projectCard(p) {
     return `
-      <article class="card">
-        ${p.image ? `<img src="${esc(p.image)}" alt="" loading="lazy" />` : ""}
+      <article class="card project">
+        ${videoEmbed(p)}
+        ${p.image && !p.video ? `<img src="${esc(p.image)}" alt="" loading="lazy" />` : ""}
+        ${p.gallery && p.gallery.length ? `<div class="gallery">${list(p.gallery, (g, i) => {
+          // Each item is either "path/to/image" or { src, caption, wide }
+          const src = typeof g === "string" ? g : g.src;
+          const cap = typeof g === "string" ? "" : g.caption || "";
+          const wide = typeof g === "object" && g.wide;
+          const label = cap || `${p.title} image ${i + 1}`;
+          return `
+          <figure${wide ? ' class="wide"' : ""}>
+            <a href="${esc(src)}" target="_blank" rel="noopener" aria-label="${esc(label)}, opens full size">
+              <img src="${esc(src)}" alt="${esc(label)}" loading="lazy" />
+            </a>
+            ${cap ? `<figcaption>${esc(cap)}</figcaption>` : ""}
+          </figure>`;
+        })}</div>` : ""}
+        ${p.date ? `<div class="date">${esc(p.date)}</div>` : ""}
         <h3>${esc(p.title)}</h3>
         <p class="muted">${esc(p.summary)}</p>
+        ${p.note ? `<div class="note">${esc(p.note)}</div>` : ""}
+        ${bullets(p.points)}
         ${p.tags && p.tags.length ? `<ul class="tags">${list(p.tags, (t) => `<li class="tag">${esc(t)}</li>`)}</ul>` : ""}
         ${p.links && p.links.length ? `<div class="links">${list(p.links, (l) => `<a ${linkAttrs(l.url)}>${esc(l.label)} ↗</a>`)}</div>` : ""}
       </article>`;
@@ -118,7 +157,7 @@
         <a href="#/projects/${other}">Switch to ${other} →</a>
       </div>
       ${header(`03 — Projects / ${title}`, `${title} Projects`)}
-      ${items.length ? `<div class="grid">${list(items, projectCard)}</div>` : empty(`No ${kind} projects added yet.`)}`;
+      ${items.length ? `<div class="grid wide">${list(items, projectCard)}</div>` : empty(`No ${kind} projects added yet.`)}`;
   }
 
   function renderStack() {
@@ -133,19 +172,27 @@
       </div>`;
   }
 
+  function certGrid(items) {
+    return `<div class="grid">
+      ${list(items, (c) => `
+        <article class="card cert">
+          ${c.image ? `<a class="cert-image" href="${esc(c.image)}" target="_blank" rel="noopener" aria-label="View certificate: ${esc(c.name)}"><img src="${esc(c.image)}" alt="Certificate: ${esc(c.name)}" loading="lazy" /></a>` : ""}
+          <h3>${esc(c.name)}</h3>
+          ${c.issuer ? `<div class="issuer">${esc(c.issuer)}</div>` : ""}
+          ${c.date ? `<div class="date">${esc(c.date)}</div>` : ""}
+          ${c.url ? `<div class="links"><a ${linkAttrs(c.url)}>View credential ↗</a></div>` : ""}
+        </article>`)}
+    </div>`;
+  }
+
   function renderCertificates() {
-    const items = S.certificates || [];
+    const certs = S.certificates || [];
+    const awards = S.awards || [];
     return `
-      ${header("05 — Certificates", "Certificates")}
-      ${items.length ? `<div class="grid">
-        ${list(items, (c) => `
-          <article class="card cert">
-            <h3>${esc(c.name)}</h3>
-            <div class="issuer">${esc(c.issuer)}</div>
-            <div class="date">${esc(c.date)}</div>
-            ${c.url ? `<div class="links"><a ${linkAttrs(c.url)}>View credential ↗</a></div>` : ""}
-          </article>`)}
-      </div>` : empty("No certificates added yet.")}`;
+      ${header("05 — Certificates", "Certificates & Awards")}
+      ${certs.length ? `<h2 class="section-title">Certificates</h2>${certGrid(certs)}` : ""}
+      ${awards.length ? `<h2 class="section-title">Awards</h2>${certGrid(awards)}` : ""}
+      ${!certs.length && !awards.length ? empty("No certificates added yet.") : ""}`;
   }
 
   function renderContact() {
