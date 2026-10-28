@@ -252,23 +252,22 @@ p { line-height: 1.7; margin: 0 0 14px; }
   margin: 0 0 12px;
   line-height: 1;
 }
-.hero-name .accent {
-  background: linear-gradient(90deg, var(--magenta), var(--purple));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
+.hero-name .accent { color: var(--text); }
 .hero-tagline { font-size: clamp(1rem, 2.4vw, 1.3rem); color: var(--yellow); margin-bottom: 20px; }
-.hero-intro { max-width: 620px; color: var(--muted); }
-.swipe-hint { margin-top: 36px; font-size: 0.8rem; color: var(--muted); }
+.hero-intro { max-width: 620px; color: var(--text); }
+.swipe-hint { margin-top: 36px; font-size: 0.8rem; color: var(--text); }
 
 /* ---------- About ---------- */
-.about { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: start; }
+.about-top { display: grid; grid-template-columns: clamp(140px, 40%, 360px) 1fr; gap: 28px; align-items: center; }
+.about-top .facts { margin: 0; gap: 18px; }
+.about-bio { margin-top: 26px; }
+.about-bio p:last-child { margin-bottom: 0; }
 .about-photo {
   width: 100%;
   aspect-ratio: 1;
   border-radius: var(--radius);
   object-fit: cover;
+  object-position: center 35%;
   border: 2px solid var(--purple);
 }
 .about-photo.placeholder {
@@ -452,8 +451,13 @@ code {
   #brand-name { display: none; }
   .nav { justify-content: flex-start; }
   .page { padding: 28px 16px 40px; }
-  .about { grid-template-columns: 1fr; }
-  .about-photo { max-width: 180px; }
+  .about-top { gap: 18px; }
   .facts li { flex-direction: column; gap: 2px; }
   .panel { padding: 18px; }
+}
+
+/* Phones: keep facts beside a slightly smaller photo */
+@media (max-width: 520px) {
+  .about-top { grid-template-columns: 45% 1fr; gap: 14px; }
+  .about-top .facts { gap: 10px; font-size: 0.85rem; }
 }

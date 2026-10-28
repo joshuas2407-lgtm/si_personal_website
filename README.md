@@ -13,10 +13,9 @@ A static personal site with an animated geometric backdrop, a top taskbar, and s
 |   | ↳ Software | `#/projects/software` |
 |   | ↳ Hardware | `#/projects/hardware` |
 | 5 | Stack | `#/stack` |
-| 6 | Other Skills | `#/skills` |
-| 7 | Certificates | `#/certificates` |
-| 8 | Contact | `#/contact` |
-| 9 | Resume | `#/resume` |
+| 6 | Certificates | `#/certificates` |
+| 7 | Contact | `#/contact` |
+| 8 | Resume | `#/resume` |
 
 To move between pages, use the taskbar, swipe left or right (touch or trackpad), use the ← → arrow keys, or click the dots at the bottom.
 
@@ -26,7 +25,7 @@ To move between pages, use the taskbar, swipe left or right (touch or trackpad),
 
 - **Add a project:** copy one `{ ... }` block inside `projects.software` or `projects.hardware` and change the fields. To show an image, put it in `assets/images/` and set `image: "assets/images/my-project.jpg"`.
 - **Add experience:** add a block to `experience`. Put the newest one first.
-- **Add a certificate, skill or stack item:** add to `certificates`, `otherSkills` or `stack`.
+- **Add a certificate or stack item:** add to `certificates` or `stack`.
 - **Update contacts:** edit `contact.links`.
 - **Upload a resume:** drop the PDF into `assets/resume/` and set `resume.file: "assets/resume/resume.pdf"`. To replace it later, overwrite the file.
 - **Profile photo:** put it in `assets/images/` and set `about.photo`.

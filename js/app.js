@@ -36,9 +36,6 @@
         <h1 class="hero-name">${esc(parts.join(" "))} <span class="accent">${esc(last)}</span></h1>
         <p class="hero-tagline">${esc(S.tagline)}</p>
         <p class="hero-intro">${esc(S.intro)}</p>
-        <div class="btn-row">
-          ${list(S.landingLinks, (l, i) => `<a class="btn${i % 2 ? " alt" : ""}" href="#/${esc(l.page)}">${esc(l.label)} →</a>`)}
-        </div>
         <p class="swipe-hint">← swipe or use arrow keys to explore →</p>
       </div>`;
   }
@@ -51,12 +48,14 @@
     return `
       ${header("01 — About", "About Me")}
       <div class="panel about">
-        ${photo}
-        <div>
-          ${list(a.paragraphs, (p) => `<p>${esc(p)}</p>`)}
+        <div class="about-top">
+          ${photo}
           <ul class="facts">
             ${list(a.facts, (f) => `<li><span class="label">${esc(f.label)}</span><span>${esc(f.value)}</span></li>`)}
           </ul>
+        </div>
+        <div class="about-bio">
+          ${list(a.paragraphs, (p) => `<p>${esc(p)}</p>`)}
         </div>
       </div>`;
   }
@@ -134,19 +133,10 @@
       </div>`;
   }
 
-  function renderSkills() {
-    const items = S.otherSkills || [];
-    return `
-      ${header("05 — Other Skills", "Other Skills", "Beyond the code and circuits.")}
-      ${items.length ? `<div class="grid">
-        ${list(items, (s) => `<article class="card"><h3>${esc(s.name)}</h3><p class="muted">${esc(s.detail)}</p></article>`)}
-      </div>` : empty("No skills added yet.")}`;
-  }
-
   function renderCertificates() {
     const items = S.certificates || [];
     return `
-      ${header("06 — Certificates", "Certificates")}
+      ${header("05 — Certificates", "Certificates")}
       ${items.length ? `<div class="grid">
         ${list(items, (c) => `
           <article class="card cert">
@@ -161,7 +151,7 @@
   function renderContact() {
     const c = S.contact || {};
     return `
-      ${header("07 — Contact", "Contact")}
+      ${header("06 — Contact", "Contact")}
       <div class="panel">
         <p>${esc(c.blurb)}</p>
         <ul class="contact-list">
@@ -175,7 +165,7 @@
     const r = S.resume || {};
     if (!r.file) {
       return `
-        ${header("08 — Resume", "Resume")}
+        ${header("07 — Resume", "Resume")}
         <div class="placeholder-box">
           <p>Resume coming soon.</p>
           <p class="muted">To add one, put your PDF in <code>assets/resume/</code> and set
@@ -183,7 +173,7 @@
         </div>`;
     }
     return `
-      ${header("08 — Resume", "Resume", r.updated ? `Last updated ${r.updated}` : "")}
+      ${header("07 — Resume", "Resume", r.updated ? `Last updated ${r.updated}` : "")}
       <div class="btn-row" style="margin:0 0 18px">
         <a class="btn" href="${esc(r.file)}" download>Download PDF ↓</a>
         <a class="btn alt" ${linkAttrs(r.file)} target="_blank" rel="noopener">Open in new tab ↗</a>
@@ -198,7 +188,6 @@
     { id: "experience", label: "Experience", render: renderExperience },
     { id: "projects", label: "Projects", render: renderProjects },
     { id: "stack", label: "Stack", render: renderStack },
-    { id: "skills", label: "Other Skills", render: renderSkills },
     { id: "certificates", label: "Certificates", render: renderCertificates },
     { id: "contact", label: "Contact", render: renderContact },
     { id: "resume", label: "Resume", render: renderResume },

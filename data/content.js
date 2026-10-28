@@ -14,24 +14,18 @@ window.SITE = {
   intro:
     "Welcome to my corner of the internet. I design and build things across hardware and software. Swipe, use the arrow keys, or pick a page from the bar above to look around.",
 
-  /* ---------- Landing page quick links (page ids from the nav) ---------- */
-  landingLinks: [
-    { label: "See my projects", page: "projects" },
-    { label: "Read my resume", page: "resume" },
-    { label: "Get in touch", page: "contact" },
-  ],
-
   /* ---------- About ---------- */
   about: {
-    photo: "", // e.g. "assets/images/me.jpg"
+    photo: "assets/images/me.webp",
     paragraphs: [
-      "This is a placeholder bio. Write a few sentences about who you are, what you study or work on, and what gets you excited.",
-      "Add a second paragraph about your interests outside of work — hobbies, communities, things you're learning.",
+      "Hello, viewer! I'm a Computer Engineer working at the intersection of AI, software and hardware.",
+      "I would describe myself as an avid learner, and I'm excited by the new developments coming out of tech every month.",
+      "Outside of work, I'm an avid traveller, a skier, and a history buff.",
     ],
     facts: [
-      { label: "Based in", value: "Your City" },
-      { label: "Studying", value: "Your Degree @ Your University" },
-      { label: "Currently", value: "Building this website" },
+      { label: "Born in", value: "Canada" },
+      { label: "Builds", value: "Software & Hardware" },
+      { label: "Currently", value: "Going on Side Quests" },
     ],
   },
 
@@ -99,14 +93,6 @@ window.SITE = {
     { group: "Frameworks", items: ["React", "Node.js", "Flask"] },
     { group: "Hardware & EDA", items: ["KiCad", "Arduino", "Raspberry Pi", "Oscilloscopes"] },
     { group: "Tools", items: ["Git", "Linux", "Docker", "VS Code"] },
-  ],
-
-  /* ---------- Other skills ---------- */
-  otherSkills: [
-    { name: "Public Speaking", detail: "Presented at events and meetups." },
-    { name: "Leadership", detail: "Led a team or club." },
-    { name: "Languages", detail: "English, and any others you speak." },
-    { name: "Design", detail: "Figma, sketching, product thinking." },
   ],
 
   /* ---------- Certificates ---------- */
