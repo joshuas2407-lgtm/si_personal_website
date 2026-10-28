@@ -10,32 +10,30 @@
 
   const CONFIG = {
     cellSize: 58,            // triangle side length in px
-    faintAlpha: 0.08,        // alpha of the always-visible background grid
-    strongAlpha: 0.9,        // max alpha of the highlighted band
+    faintAlpha: 0.06,        // alpha of the always-visible background grid
+    strongAlpha: 0.75,       // max alpha of the highlighted band
     lineWidth: 1.15,
     colors: [                // left → right gradient of the lines
-      [0.0, "#ff2fd0"],      // magenta
-      [0.25, "#ef3ae6"],
-      [0.5, "#b84dff"],
-      [0.72, "#9b4dff"],     // purple
-      [0.88, "#7f5cff"],
-      [0.96, "#14d39a"],     // emerald accent
-      [1.0, "#ffd23f"],      // yellow accent
+      [0.0, "#ffffff"],      // white
+      [0.3, "#d6d6d6"],
+      [0.6, "#a3a3a3"],      // mid grey
+      [0.85, "#7a7a7a"],
+      [1.0, "#5c5c5c"],      // dark grey
     ],
-    bgInner: "#2c1260",      // deep purple centre
-    bgOuter: "#120a30",      // dark purple-blue edges
-    glows: [                 // soft colour washes: x, y (0–1 of screen), radius (× screen), colour
-      [0.18, 0.3, 0.6, "rgba(255, 47, 208, 0.18)"],   // magenta
-      [0.82, 0.72, 0.65, "rgba(155, 77, 255, 0.2)"],  // purple
+    bgInner: "#1c1c1f",      // charcoal centre
+    bgOuter: "#09090a",      // near-black edges
+    glows: [                 // soft washes: x, y (0–1 of screen), radius (× screen), colour
+      [0.18, 0.3, 0.6, "rgba(255, 255, 255, 0.06)"],
+      [0.82, 0.72, 0.65, "rgba(200, 200, 200, 0.05)"],
     ],
     // Silk ribbons down the right side of the screen.
     // x = centre line (fraction of screen width), amp = how far it sways,
     // width = ribbon width, twist = how often it twists, speed = idle drift,
     // colors = top → bottom, strands = number of fine lines, alpha = brightness.
     ribbons: [
-      { x: 0.8,  amp: 0.07, freq: 1.5, width: 0.075, twist: 2.2, speed: 0.22,  colors: ["#b84dff", "#ff2fd0"], strands: 18, alpha: 0.32 },
-      { x: 0.87, amp: 0.05, freq: 2.0, width: 0.05,  twist: 1.6, speed: -0.17, colors: ["#7f5cff", "#c03cff"], strands: 14, alpha: 0.28 },
-      { x: 0.74, amp: 0.09, freq: 1.1, width: 0.04,  twist: 2.8, speed: 0.15,  colors: ["#ff2fd0", "#9b4dff"], strands: 12, alpha: 0.24 },
+      { x: 0.8,  amp: 0.07, freq: 1.5, width: 0.075, twist: 2.2, speed: 0.22,  colors: ["#e6e6e6", "#8a8a8a"], strands: 18, alpha: 0.26 },
+      { x: 0.87, amp: 0.05, freq: 2.0, width: 0.05,  twist: 1.6, speed: -0.17, colors: ["#9a9a9a", "#d4d4d4"], strands: 14, alpha: 0.22 },
+      { x: 0.74, amp: 0.09, freq: 1.1, width: 0.04,  twist: 2.8, speed: 0.15,  colors: ["#ffffff", "#707070"], strands: 12, alpha: 0.18 },
     ],
   };
 
